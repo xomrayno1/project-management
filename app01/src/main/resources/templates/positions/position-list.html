@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="layouts :: thead">
+
+  
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav th:replace="layouts :: nav-bar" >
+     
+  </nav>
+	<br>
+  <!-- Page Content -->
+  <div class="container">
+  		 
+     <div class="table-responsive">   
+     	<div class="row" style="margin-bottom: 20px ;    ">
+     		<div class="col-sm-4">
+     			<a	th:href="@{/positions/new}"><button class="btn btn-success">New Position</button></a>
+     		</div>
+     		 
+     		<div class="col-sm-4">
+     			<form th:action="@{/positions}" id="formSearch" th:object="${searchForm}" method="POST">
+     				<input class="form-control" type="text" th:field="*{name}" placeholder="Nhập tên tìm kiếm..."> 
+     			</form>
+     		</div>
+     		 
+     		<div class="col-sm-2 text-center">
+     			<button form="formSearch" class="btn btn-info">Search</button>
+     		</div>
+     	</div>
+     	       
+		<table class="table table-bordered text-center">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Name</th>
+		      <th scope="col">Description</th>
+		      <th scope="col">Create Date</th>
+		      <th scope="col">Update Date</th>
+		      <th scope="col">+</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr th:each="aPosi :	${pagePosi.getContent()}">
+		      	<td th:text=${aPosi.id}/>
+		      	<td th:text=${aPosi.name}/>
+				<td th:text=${aPosi.description}/>
+				<td th:text=${aPosi.createDate}/>
+				<td th:text=${aPosi.updateDate}/>
+				<td >
+					<a th:href="@{'/positions/edit/' + ${aPosi.id}}"	class="btn btn-warning">  Sửa </a>
+					<a th:onclick="deletePosi([[${aPosi.id}]])" class=" btn btn-danger">  Xóa </a>
+				</td>
+		    </tr> 
+		     
+		  </tbody>
+		  <tfoot>
+		  	<tr>
+			  	<td colspan="7">	  	
+			  		<nav aria-label="Page navigation example">
+					  <ul	 class="pagination justify-content-center">
+					    <li class="page-item  ">
+					      <a th:if="${pagePosi.getNumber()+1 == 1}" class="page-link" href="javascript:void(0)" tabindex="-1">Previous</a>
+					       <a th:unless="${pagePosi.getNumber()+1 == 1}" class="page-link"  th:onclick="gotoPage([[${pagePosi.getNumber()+1  - 1}]])" tabindex="-1">Previous</a>
+					    </li>
+					     <th:block th:each="i : ${#numbers.sequence(1, pagePosi.getTotalPages() )}"> 
+						    <!-- <button th:if="${response.page == i}" class="active">Dummy</button>
+						    <button th:unless="${response.page == i}">Dummy</button>
+						     -->						     
+					    	<li th:if="${pagePosi.getNumber()+1 == i}"   class="active page-item"> 
+					    		<a th:text=${i}  href="javascript:void(0)"	class="page-link" > </a>
+					    	</li>
+					    	 <li th:unless="${pagePosi.getNumber()+1 == i}"   class="page-item"> 
+					    		<a th:text=${i} class="page-link" th:onclick="gotoPage([[${i}]])"> </a>
+					    	</li>
+						</th:block>
+					    <li class="page-item">
+					      <a th:if="${pagePosi.getNumber() + 1 == pagePosi.getTotalPages()}" class="page-link" href="javascript:void(0)">Next </a>
+					      <a th:unless="${pagePosi.getNumber() + 1 == pagePosi.getTotalPages()}" class="page-link" th:onclick="gotoPage([[${pagePosi.getNumber()+2}]])">Next</a>
+					      
+					    </li>
+					  </ul>
+					</nav>
+			  	</td>
+		  	</tr>
+		  </tfoot>
+		</table>
+		<script type="text/javascript">
+			function gotoPage(page){
+				$("#formSearch").attr('action',"/positions?page="+page);
+				$("#formSearch").submit();
+			}
+			$(document).ready(function(){
+				$("#positionId").parents("li").addClass("active").siblings().removeClass("active");
+	    	});
+			function deletePartner(id){
+				if(confirm("Bạn có chắc chắn muốn xóa nó không ?")){
+					location.href="/positions/delete/"+id;
+				}
+			}
+		</script>
+		  
+  </div>
+</div>
+  <!-- Bootstrap core JavaScript -->
+  <script th:src="@{/js/jquery.slim.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	 
+</body>
+
+</html>

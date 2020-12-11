@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      >
+ 
+<head th:fragment="thead">
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Quản lý dự án</title>
+
+  <!-- Bootstrap core CSS -->
+  	<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+	<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>	  
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav th:fragment="nav-bar" class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+      <a class="navbar-brand" th:href="@{/index}">Start Bootstrap</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" th:href="@{/index}">Home
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+ 		  <li class="nav-item"	sec:authorize="hasRole('ROLE_USER')">
+            <a class="nav-link"	id="projectId" 	th:href="@{/projects}">Task Cá nhân</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_USER')">
+            <a class="nav-link"	id="projectId" th:href="@{/projects}">Thống kê cá nhân</a>
+          </li>
+          <li class="nav-item"	sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link"	id="listProjectId" th:href="@{/projects}">Project</a>
+          </li>
+          <li class="nav-item"	sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" id="taskId" th:href="@{/tasks}">Tasks</a>
+          </li>
+          <li class="nav-item"	sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link"   id="employeeId" th:href="@{/employees}">Employee</a>
+          </li>
+            
+          <li class="nav-item"	sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" id="teamId" th:href="@{/teams}">Team</a>
+          </li>
+          <li class="nav-item"	sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" id="positionId" th:href="@{/positions}">Position</a>
+          </li>
+          <li class="nav-item"	sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="nav-link" id="partnerId" th:href="@{/partners}">Partners</a>
+          </li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_SUPERADMIN')"	>
+            <a class="nav-link" id="accountId" th:href="@{/accounts}">Accounts</a>
+          </li>
+          <li class="nav-item"	sec:authorize="isAuthenticated()">
+          	<a class="nav-link"		sec:authentication="name">none</a>
+          </li>    
+          <li class="nav-item"	sec:authorize="isAuthenticated()">
+            <a class="nav-link" th:href="@{/logout}">Logout</a>
+          </li>
+          
+        </ul>
+      </div>
+ 
+    </div>
+   
+  </nav>
+
+  <!-- Page Content -->
+  
+
+  <!-- Bootstrap core JavaScript -->
+  <script th:src="@{/js/jquery.slim.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="layouts :: thead">
+
+  
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav th:replace="layouts :: nav-bar" >
+     
+  </nav>
+	<br>
+  <!-- Page Content -->
+  <div class="container">
+  		 
+     <div class="table-responsive">   
+     	<div class="row" style="margin-bottom: 20px ;    ">
+     		<div class="col-sm-4">
+     			<a	th:href="@{/employees/new}"><button class="btn btn-success">New Employee</button></a>
+     		</div>
+     		 
+     		<div class="col-sm-4">
+     			<form th:action="@{/employees}" id="formSearch" th:object="${searchForm}" method="POST">
+     				<input class="form-control" type="text" th:field="*{lastName}" placeholder="Nhập tên tìm kiếm..."> 
+     			</form>
+     		</div>
+     		 
+     		<div class="col-sm-2 text-center">
+     			<button form="formSearch" class="btn btn-info">Search</button>
+     		</div>
+     	</div>
+     	       
+		<table class="table table-bordered text-center">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">First</th>
+		      <th scope="col">Last</th>
+		      <th scope="col">Email</th>
+		      <th scope="col">Create Date</th>
+		      <th scope="col">Update Date</th>
+		      <th scope="col">+</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr th:each="aEmployee :	${pageEmp.getContent()}">
+		      	<td th:text=${aEmployee.id}/>
+		      	<td th:text=${aEmployee.firstName}/>
+				<td th:text=${aEmployee.lastName}/>
+				<td th:text=${aEmployee.email}/>
+				<td th:text=${aEmployee.createDate}/>
+				<td th:text=${aEmployee.updateDate}/>
+				<td >
+				 	<a  class="btn btn-primary btn-manager" data-toggle="modal" data-target="#addTeam"  title="Add Team"><i class="fa fa-users" aria-hidden="true"></i></a>
+					<a th:href="@{'/employees/edit/' + ${aEmployee.id}}"	class="btn btn-warning">  Sửa </a>
+					<a th:onclick="deleteEmployee([[${aEmployee.id}]])" class=" btn btn-danger">  Xóa </a>
+				</td>
+		    </tr> 
+		     
+		  </tbody>
+		  <tfoot>
+		  	<tr>
+			  	<td colspan="7">	  	
+			  		<nav aria-label="Page navigation example">
+					  <ul	 class="pagination justify-content-center">
+					    <li class="page-item  ">
+					      <a th:if="${pageEmp.getNumber()+1 == 1}" class="page-link" href="javascript:void(0)" tabindex="-1">Previous</a>
+					       <a th:unless="${pageEmp.getNumber()+1 == 1}" class="page-link"  th:onclick="gotoPage([[${pageEmp.getNumber() - 1}]])" tabindex="-1">Previous</a>
+					    </li>
+					     <th:block th:each="i : ${#numbers.sequence(1, pageEmp.getTotalPages() )}"> 
+						    <!-- <button th:if="${response.page == i}" class="active">Dummy</button>
+						    <button th:unless="${response.page == i}">Dummy</button>
+						     -->						     
+					    	<li th:if="${pageEmp.getNumber()+1 == i}"   class="active page-item"> 
+					    		<a th:text=${i}  href="javascript:void(0)"	class="page-link" > </a>
+					    	</li>
+					    	 <li th:unless="${pageEmp.getNumber()+1 == i}"   class="page-item"> 
+					    		<a th:text=${i} class="page-link" th:onclick="gotoPage([[${i}]])"> </a>
+					    	</li>
+						</th:block>
+					    <li class="page-item">
+					      <a th:if="${pageEmp.getNumber() + 1  == pageEmp.getTotalPages()}" class="page-link" href="javascript:void(0)">Next </a>
+					      <a th:unless="${pageEmp.getNumber() + 1 == pageEmp.getTotalPages()}" class="page-link" th:onclick="gotoPage([[${pageEmp.getNumber()+2}]])">Next</a>
+					    </li>
+					  </ul>
+					</nav>
+			  	</td>
+		  	</tr>
+		  </tfoot>
+		</table>
+		<script type="text/javascript">
+			function gotoPage(page){
+				$("#formSearch").attr('action',"/employees?page="+page);
+				$("#formSearch").submit();
+			}
+			$(document).ready(function(){
+				$("#employeeId").parents("li").addClass("active").siblings().removeClass("active");
+	    	});
+			function deleteEmployee(id){
+				if(confirm("Bạn có chắc chắn muốn xóa nó không ?")){
+					location.href="/employees/delete/"+id;
+				}
+			}
+		</script>
+		  
+  </div>
+</div>
+  <!-- Bootstrap core JavaScript -->
+  <script th:src="@{/js/jquery.slim.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	 
+</body>
+
+</html>

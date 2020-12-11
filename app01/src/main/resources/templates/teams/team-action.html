@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="layouts :: thead">
+
+  
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav th:replace="layouts :: nav-bar" >
+     
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+  	<div style="margin-top: 20px;">
+  		<form method="POST" th:action="@{/teams/save}" th:object="${submitForm}"	>
+  			<div class="form-group">
+			    <label for="inputAddress">Name</label>
+			    <input type="text" class="form-control" th:field="*{name}"   placeholder="Nhập tên team...">
+			    <span style="color: red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"	></span>
+			    <input type="hidden"    th:field="*{id}"  >
+			    <input type="hidden"    th:field="*{createDate}"  >
+			    <input type="hidden"    th:field="*{updateDate}"  >
+		  	</div>
+		  <div class="form-group">
+		    <label for="inputAddress2">Description</label>
+		    <textarea rows="4"  class="form-control" cols="6" th:field="*{description}"></textarea>
+		  </div>
+		  
+		  <button type="submit" class=" btn btn-primary">Lưu</button>
+		  <a class="btn btn-warning" th:href="@{/teams}"> Quay lại</a>
+		</form>
+  	</div>
+  </div>
+  		<script type="text/javascript"> 
+				$(document).ready(function(){
+					$("#teamId").parents("li").addClass("active").siblings().removeClass("active");
+		    	});
+		</script>
+  <!-- Bootstrap core JavaScript -->
+  <script th:src="@{/js/jquery.slim.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+
+</html>

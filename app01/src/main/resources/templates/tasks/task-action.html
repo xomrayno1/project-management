@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="layouts :: thead">
+
+  
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav th:replace="layouts :: nav-bar" >
+     
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+  	<div style="margin-top: 20px;">
+  		<form	 th:action="@{/tasks/save}"	th:object="${submitForm}" method="POST"	 id="formAddTask">
+			          <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Task Name (*):</label>
+			            <input type="text" class="form-control" id="name"	th:field="*{name}"	name="name" >
+			            <span style="color: red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+			          </div>
+			          <div class="form-group">
+			            <label for="message-text" class="col-form-label">Description :</label>
+			            <textarea class="form-control" name="description"	th:field="*{description}" id="description"></textarea>
+			          </div>
+			          <div class="form-group">
+			          	<div class="row">
+				          	<div class="col-sm-6">
+				          		 <label for="plannedStartDate" class="col-form-label">Planned Start Date  (*) :</label>
+				            	 <input  type="date" class="form-control" th:field="*{plannedStartDate}"	name="plannedStartDate"	 id="plannedStartDate">
+								 <span style="color: red" th:if="${#fields.hasErrors('plannedStartDate')}" th:errors="*{plannedStartDate}"></span>
+			          		</div>
+			          		<div class="col-sm-6">
+				          		 <label for="plannedEndDate" class="col-form-label">Planned End Date (*) :</label>
+				            	 <input 	type="date" class="form-control" th:field="*{plannedEndDate}" name="plannedEndDate" id="plannedEndDate">
+			          			<span style="color: red" th:if="${#fields.hasErrors('plannedEndDate')}" th:errors="*{plannedEndDate}"></span>
+			          		</div>
+			          	</div>	          	
+			          </div>
+			           <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Planned Budget (*) :</label>
+			            <input 	pattern="[0-9]"	min="0"	type="number" class="form-control" name="plannedBudget"	th:field="*{plannedBudget}"	id="plannedBudget">		          	
+			          	<input type="hidden" class="form-control" name="id"	th:field="*{id}"	id="id">
+			          </div>
+			           <div class="form-group">
+				          	<div class="row">
+					          	<div class="col-sm-6">
+					          		 <label for="plannedStartDate" class="col-form-label">Actual Start Date  :</label>
+					            	 <input  type="date" class="form-control" th:field="*{actualStartDate}"	name="actualStartDate"	 id="actualStartDate">
+				          			<span style="color: red" th:if="${#fields.hasErrors('actualStartDate')}" th:errors="*{actualStartDate}"></span>
+				          		</div>
+				          		<div class="col-sm-6">
+					          		 <label for="plannedEndDate" class="col-form-label">Actual End Date :</label>
+					            	 <input 	type="date" class="form-control" th:field="*{actualEndDate}" name="actualEndDate" id="actualEndDate">
+				          			<span style="color: red" th:if="${#fields.hasErrors('actualEndDate')}" th:errors="*{actualEndDate}"></span>
+				          		</div>
+							</div>
+			          </div>
+			           <div class="form-group">
+			            	<label for="recipient-name" class="col-form-label">Actual Budget :</label>
+			            	<input type="number" min="0" class="form-control" name="actualBudget"	th:field="*{actualBudget}"	id="actualBudget">		       
+			            </div>
+			            <div class="form-group">
+			            	<label for="recipient-name" class="col-form-label">Project :</label>
+			            	<select th:field="*{project}" class="form-control">
+			            		  <option value="">Select a Project</option>
+			            		<option	th:each="aProject : 	${listProject}" th:text="${aProject.name}" th:value="${aProject.id}"></option>
+			            	</select> 
+			            	<span style="color: red" th:if="${#fields.hasErrors('project')}" th:errors="*{project}"></span>  
+			            </div>
+			            <div class="form-group">
+			            	<label for="recipient-name" class="col-form-label">Project :</label>
+			            	<select th:field="*{stages}" class="form-control">
+			            		  <option value="">Select a Stage</option>
+			            		  <option value="INPROGRESS">In Progress</option>
+			            		  <option value="COMPLETED">Completed</option>
+			            		  <option value="NOTSTARTED">Not Started</option>
+			            	</select> 
+			            	<span style="color: red" th:if="${#fields.hasErrors('stages')}" th:errors="*{stages}"></span>  
+			            </div>
+			        </form>
+			        <div class="text-center" >
+					  	<button type="submit" form="formAddTask" class=" btn btn-primary">Lưu</button>
+					  	<a class="btn btn-warning" th:href="@{/tasks}"> Quay lại</a>	
+		  			</div>
+  	</div>
+  			<hr>
+  	 
+		 
+  </div>
+  <hr>
+  		<script type="text/javascript"> 
+				$(document).ready(function(){
+					$("#taskId").parents("li").addClass("active").siblings().removeClass("active");
+		    	});
+		</script>
+   
+  <script th:src="@{/js/jquery.slim.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+
+</html>

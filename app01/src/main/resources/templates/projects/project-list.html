@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="layouts :: thead">
+
+ 
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav th:replace="layouts :: nav-bar" >
+     
+  </nav>
+	<br>
+  <!-- Page Content -->
+  <div class="container">
+  		 <div class="row" style="margin-bottom: 20px ;    ">
+     		<div class="col-sm-4">
+     			 
+     				<a	th:href="@{/projects/new}"><button class="btn btn-success">Tạo dự án</button></a>
+     			 
+     		</div>
+     		<div class="col-sm-4">
+     			<form th:action="@{/projects}" th:object="${searchForm}" 	method="POST" id="formSearch">
+     				<input class="form-control" type="text"  th:field="*{name}" placeholder="Nhập tên tìm kiếm..."> 
+     			</form>
+     		</div>
+     	 
+     		<div class="col-sm-2 text-center">
+     			<button class="btn btn-info"	form="formSearch">Search</button>
+     		</div>
+     	</div>
+     </div>	
+     <div class="container-fluid"> 	
+     <div class="table-responsive">   
+     	 
+      
+     	       
+		<table class="table table-bordered text-center"	 id="tbProject">
+		  <thead   >
+		    <tr  >
+		      <th scope="col">Id</th>
+		      <th scope="col">Name</th>
+		      <th scope="col">Ngày bắt đầu dự kiến</th>
+		      <th scope="col">Ngày kết thúc dự kiến</th>
+		      <th scope="col">Ngày bắt đầu</th>
+		      <th scope="col">Ngày kết thúc</th>
+		      <th scope="col">Giai đoạn</th>
+		      <th scope="col">+</th>
+		    </tr>
+		  </thead>
+		  <tbody  >
+		    <tr th:each="aProject	: ${listProject}">
+		      <td th:text=${aProject.id}	/>
+		      <td th:text=${aProject.name}	/>
+		      <td th:text=${aProject.plannedStartDate}	/>
+		      <td th:text=${aProject.plannedEndDate}	/>
+		      <td th:text=${aProject.actualStartDate}	/>
+		      <td th:text=${aProject.actualEndDate}	/>
+		      <td th:text=${aProject.stage}	/>
+		      <td >
+		      	 <a  class="btn btn-primary btn-manager" data-toggle="modal" data-target="#addManager"  title="Phân quyền project"><i class="fa fa-users" aria-hidden="true"></i></a>
+		      	 <a th:href="@{'/projects/edit/'+ ${aProject.id}}"	class="btn btn-warning" > <i class="fa fa-edit" aria-hidden="true"></i></a>
+		      	 <a th:onclick="deleteProject([[${aProject.id}]])"	class="btn btn-danger"> <i class="fa fa-trash" aria-hidden="true"></i></a>
+		      	 <a th:href="@{/projects/task(id=${aProject.id})}"	class="btn btn-info"> <i class="fa fa-tasks" aria-hidden="true"></i></a>
+		      </td>
+		    </tr>
+		    
+		  </tbody>
+		  <tfoot>
+		  	<tr>
+			  	<td colspan="8">	  	
+			  		<nav aria-label="Page navigation example">
+					  <ul class="pagination justify-content-center">
+					    <li th:if="${paging.indexPage == 1}" class="page-item  ">
+					      <a class="page-link" href="javascript:void(0)" tabindex="-1">Previous</a>
+					    </li>
+					    <li th:unless="${paging.indexPage == 1}" class="page-item  ">
+					      <a class="page-link" th:onclick="gotoPage([[${paging.indexPage  - 1}]])" tabindex="-1">Previous</a>
+					    </li>
+					    <th:block th:each=" i  : ${#numbers.sequence(1,paging.totalPage)}">
+					    	<li	th:if="${paging.indexPage == i}" class="page-item active">
+					    		<a th:text=${i} class="page-link" href="javascript:void(0)"> </a>
+					    	</li>
+					    	<li th:unless="${paging.indexPage == i}"class="page-item">
+					    		<!-- <a th:text=${i} class="page-link" th:onclick="gotoPage([[${i}]])"  > </a> -->
+					    		<a th:text=${i} class="page-link" th:onclick="gotoPage([[${i}]])"> </a>
+					    	</li>
+					    </th:block>
+					     
+					    <li th:if="${paging.indexPage == paging.totalPage}" class="page-item">
+					      <a class="page-link" href="javascript:void(0)">Next</a>
+					    </li>
+					    <li th:unless="${paging.indexPage == paging.totalPage}" class="page-item">
+					      <a class="page-link" th:onclick="gotoPage([[${paging.indexPage + 1}]])">Next</a>
+					    </li>
+					  </ul>
+					</nav>
+			  	</td>
+		  	</tr>
+		  </tfoot>
+		</table>
+		<script type="text/javascript">
+			function gotoPage(page){
+				$("#formSearch").attr('action',"/projects?page="+page);
+				$("#formSearch").submit();
+			}
+			$(document).ready(function(){
+				$("#listProjectId").parents("li").addClass("active").siblings().removeClass("active");
+	    	});
+			function deleteProject(id){
+				if(confirm("Bạn có chắc chắn muốn xóa nó không ?")){
+					location.href="/projects/delete/"+id;
+				}
+			}
+		</script>
+		<div class="modal fade" id="addManager" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog	modal-lg" role="document">
+		   <form    method="get" action="/projects/manager/save"	id="formSaveProjectManage">
+		    <input type="hidden" name="proId" id="proId"  >
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLabel">Quản lý</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+			      <div class="modal-body">
+			        <table class="table table-bordered text-center" id="tbManager">
+					  <thead>
+					    <tr>
+					      <th scope="col">Chọn tài khoản</th>
+					      <th scope="col">Username</th>
+					    </tr>
+					 </thead>
+					 <tbody>
+					 	<tr	th:each="aUser : ${listUserRoleAdmin}">	
+					 		<td ><input type="checkbox" name="userId"  th:value="${aUser.id}" ></td>  
+					 		<td	th:text="${aUser.username}"></td>
+					 	 </tr>
+					 </tbody>
+					</table>  
+			      </div>
+		      <div class="modal-footer">
+		       <button type="submit" class="btn btn-primary"	form="formSaveProjectManage" id="btn-saveManagerProject" >Save</button>
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+		    </form>
+		  </div>
+		</div>
+		 
+		<script type="text/javascript">
+			function clear(){
+				 $("#tbManager tbody td:first-child").each(function(){
+			 		   var checkboxValue = $(this).find("input[type=checkbox]");	
+			 		  checkboxValue.prop("checked",false);
+			 	   });
+				}
+			 $(document).ready(function(){
+				$(".btn-manager").on('click',function(){
+					clear();
+				 	var projectId = $(this).parent().siblings(":first").text();
+				 	$("#proId").val(projectId);
+				 	var xhr = new XMLHttpRequest();
+				 	xhr.withCredentials = true;
+				 	xhr.addEventListener("readystatechange", function() {
+				 	  if(this.readyState === 4) {
+				 	   var myObject = JSON.parse(this.responseText);
+				 	   $.each(myObject,function(index,element){
+				 		  $("#tbManager tbody td:first-child").each(function(){
+					 		   var checkboxValue = $(this).find("input[type=checkbox]");	
+					 		   if(parseInt(checkboxValue.val()) === element.id){
+					 			  checkboxValue.prop("checked",true);
+					 		   } 
+					 	   });
+			 		   });
+				 	  }
+				 	});
+				 	xhr.open("GET", "http://localhost:8082/api/accounts?projectsId="+projectId);
+				 	xhr.send();
+				});
+				 
+				 
+			 });
+		</script>
+  </div>
+</div>
+  <!-- Bootstrap core JavaScript -->
+  <script th:src="@{/js/jquery.slim.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+
+</html>

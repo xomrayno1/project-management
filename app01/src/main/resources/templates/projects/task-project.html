@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="layouts :: thead">
+
+ 
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav th:replace="layouts :: nav-bar" >
+     
+  </nav>
+	<br>
+  <!-- Page Content -->
+  <div class="container-fluid">
+  		 
+  		 
+<div class="row">
+	<div class="col-sm-4">
+		<div class="panel panel-primary">
+	      <div class="panel-heading">Nhân viên</div>
+	      <div class="panel-body">
+	      	<ul class="list-group" th:each="aEmp : ${listEmpTask}">
+			  <li   class="list-group-item d-flex justify-content-between align-items-center">
+			     [[${aEmp.firstName}]] [[${aEmp.lastName}]] - [[${aEmp.code}]]
+			    <span class="badge badge-primary badge-pill"> [[${aEmp.tasksCount}]]</span>
+			  </li>
+			</ul>
+	      </div>
+    	</div>
+	</div>
+		<div class="col-sm-8">
+			<div class="card text-center">
+			  <div class="card-header">
+			     Thông tin dự án
+			  </div>
+			  <div class="card-body">
+			 	 <div class="col-md-4">
+	 			<canvas id="myPieChart"	height="50"	 width="50"> </canvas>	 				
+	 				<script>
+	 					var chartData = "[[${chartJson}]]";
+	 				</script>		 					
+	 			</div>
+			    <h5 class="card-title"	th:text="${project.name}"> </h5>
+			    <p class="card-text" th:text="${project.projectDescription}"> </p>
+			    <p>Ngày bắt đầu dự kiến :  [[${project.plannedEndDate}]]</p>
+			    <p>Ngày kết thúc dự kiến :  [[${project.plannedEndDate}]]</p> 
+			    <p>Ngày bắt đầu   :  [[${project.actualStartDate}]]</p>
+			    <p>Ngày kết thúc   :  [[${project.actualEndDate}]]</p> 
+			    <a href="#" class="btn btn-primary" id="btnAddTask" data-toggle="modal" data-target="#addTask">Thêm Task</a>
+			  </div>
+			  <div class="card-footer text-muted">
+			     [[${project.stage}]]
+			  </div>
+			</div>
+			 
+			<hr>
+	  		<div class="row">
+	  			<div class="col-sm-4">
+		  			 <div class="panel panel-info">
+				      <div class="panel-heading">Chưa bắt đầu</div> 
+				      <div class="panel-body"> 
+				      <th:block	th:each="aTask : ${listTask}"> 
+				      	<ul  th:if="${aTask.stages == 'NOTSTARTED'}" class="list-group"  >
+							<li     class="list-group-item" >
+								[[${aTask.name}]]
+								 <span style="background-color: white;" class="badge badge-primary badge-pill">
+								 	<input type="hidden" th:value="${aTask.id}">
+								 	<a class="btnViewTask" 	data-target="#myModal"     data-toggle="modal" title="Chi tiết task" href="#"><i class="fa fa-eye" aria-hidden="true"></i></a>
+								 </span>	
+							</li> 
+						</ul>
+					  </th:block>	
+				      </div>
+				    </div>
+	  			</div>
+	  			<div class="col-sm-4">
+						<div class="panel panel-warning">
+					      <div class="panel-heading">Đang tiến hành</div>
+					      <div class="panel-body">
+							<th:block	th:each="aTask : ${listTask}"> 
+						      	<ul  th:if="${aTask.stages == 'INPROGRESS'}" class="list-group"  >
+									<li     class="list-group-item" > 
+										[[${aTask.name}]]
+										
+										<span style="background-color: white;" class="badge badge-primary badge-pill">
+											<input type="hidden" th:value="${aTask.id}">
+											<a  class="btnViewTask" data-target="#myModal"    data-toggle="modal" title="Chi tiết task" href="#"><i class="fa fa-eye" aria-hidden="true"></i></a>
+										</span>
+									</li> 
+								</ul>
+							</th:block>	
+					      </div>
+					    </div>
+	  			</div>
+	  			<div class="col-sm-4">
+	  				<div class="panel panel-success">
+					      <div class="panel-heading">Đã hoàn thành</div>
+					      <div class="panel-body">
+							 	<th:block	th:each="aTask : ${listTask}"> 
+							      	<ul  th:if="${aTask.stages == 'COMPLETED'}" class="list-group"  >
+										<li   class="list-group-item" >
+											[[${aTask.name}]]
+											<span style="background-color: white;" class="badge badge-primary badge-pill">
+												<input type="hidden" th:value="${aTask.id}">
+												<a class="btnViewTask" data-target="#myModal" data-toggle="modal"	title="Chi tiết task" href="#"><i class="fa fa-eye" aria-hidden="true"></i></a>
+											</span>
+										 </li> 
+									</ul>
+							</th:block>		
+						  </div>
+	    			</div>
+	  				 	  		  
+					 
+	  			</div>
+	  		</div> 
+		</div>
+		 
+		
+	</div>
+  		<div class="card text-center">
+ 
+			  <div class="card-footer text-muted">
+			     [[${project.stage}]]
+			  </div>
+			</div>	
+  		<div class="modal fade bd-example-modal-lg" id="addTask" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg">
+		    <div class="modal-content">
+		       	<div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLabel">Thêm Task</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			        <form	 th:action="@{/projects/task/save}"	th:object="${task}" method="POST"	 id="formAddTask">
+			          <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Thên Task :</label>
+			            <input type="text" class="form-control" id="name"	th:field="*{name}"	name="name" required="required">
+			          </div>
+			          <div class="form-group">
+			            <label for="message-text" class="col-form-label">Mô Tả  :</label>
+			            <textarea class="form-control" name="description"	th:field="*{description}" id="description"></textarea>
+			          </div>
+			          <div class="form-group">
+			          	<div class="row">
+				          	<div class="col-sm-6">
+				          		 <label for="plannedStartDate" class="col-form-label">Ngày bắt đầu dự kiến  :</label>
+				            	 <input required="required" type="date" class="form-control" th:field="*{plannedStartDate}"	name="plannedStartDate"	 id="plannedStartDate">
+			          		</div>
+			          		<div class="col-sm-6">
+				          		 <label for="plannedEndDate" class="col-form-label">Ngày kết thúc dự kiến :</label>
+				            	 <input required="required"	type="date" class="form-control" th:field="*{plannedEndDate}" name="plannedEndDate" id="plannedEndDate">
+			          		</div>
+			          	</div>
+			          	<p id="error" class="text-center" style="color:red"/>
+			          </div>
+			           <div class="form-group">
+			            <label for="recipient-name" class="col-form-label">Ngân sách :</label>
+			            <input 	pattern="[0-9]" 	type="number" class="form-control" name="plannedBudget"	th:field="*{plannedBudget}"	id="plannedBudget">
+			          	<input type="hidden" class="form-control" name="project"	th:field="*{project}"	id="project">
+			          	<input type="hidden" class="form-control" name="id"	th:field="*{id}"	id="id">
+
+			          </div>
+			          	<div class="form-group">
+			          		<label for="recipient-name" class="col-form-label">Giai đoạn :</label>
+			            	<select th:field="*{stages}" class="form-control" name="stages" id="stages" required="required">
+			            		  <option value="">Chọn giai đoạn</option>
+			            		  <option value="INPROGRESS">Đang tiến hành</option>
+			            		  <option value="COMPLETED"> Đã hoàn thành</option>
+			            		  <option value="NOTSTARTED">Chưa bắt đầu</option>
+			            	</select>
+			          	</div>
+			        </form>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="submit" form="formAddTask" class="btn btn-primary">Lưu</button>
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+			      </div>
+		    </div>
+		  </div>
+		</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nhân viên</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalContent">
+         
+      </div>
+      <div class="modal-footer">
+      	<a class="btn btn-primary" title="Chi tiết task"><i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+  <!-- Bootstrap core JavaScript -->
+  <script th:src="@{/js/jquery.slim.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/myChart.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	<script type="text/javascript">
+			 
+			$(".btnViewTask").on('click',function(){
+				var taskId = $(this).siblings(":first").val();
+				var xhr = new XMLHttpRequest();
+				xhr.withCredentials = true;
+				xhr.addEventListener("readystatechange", function() {
+					  if(this.readyState === 4) {
+					    var myObject = JSON.parse(this.responseText);
+					    var  html = '' 
+					    	$.each(myObject, function(index , element){
+					    	html += '<ul class="list-group">'
+					    	html +=		'<li class="list-group-item">'+element.employee.firstName+" "+element.employee.lastName+'</li>'
+					    	html += '</ul>'
+					    	});
+	 					 $("#myModal #modalContent").html(html);
+					  }
+					}); 
+				xhr.open("GET", "http://localhost:8082/api/assigned?taskId="+taskId);
+				xhr.send();	
+			});
+			$(document).ready(function(){
+				$("#listProjectId").parents("li").addClass("active").siblings().removeClass("active");
+	    	});
+			function deleteProject(id){
+				if(confirm("Bạn có chắc chắn muốn xóa nó không ?")){
+					location.href="/projects/delete/"+id;
+				}
+			}
+			function clear(){
+				$("#name").val("");
+			    $("#description").val("");
+			    $("#plannedStartDate").val(""); 
+			    $("#plannedEndDate").val("");
+			    $("#plannedBudget").val("");
+			    $("#actualEndDate").val(""); 
+			    $("#actualStartDate").val("");
+			    $("#actualBudget").val("");
+			    $("#error").html("");
+			    
+			}
+			$("#btnAddTask").click(function(){
+				clear();
+			});
+			$("#formAddTask").submit(function(e){
+				var plannedStartDate =  $("#plannedStartDate").val(); 
+				var plannedEndDate = $("#plannedEndDate").val();
+				if(new Date(plannedStartDate).getTime() > new Date(plannedEndDate).getTime()){
+					e.preventDefault();
+					$("#error").html(" Planned End Date is not less than Planned Start Date ");
+				}	 
+			});
+			
+		
+		</script>
+</body>
+
+</html>

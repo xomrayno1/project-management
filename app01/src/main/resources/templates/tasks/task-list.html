@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="layouts :: thead">
+
+  
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav th:replace="layouts :: nav-bar" >
+     
+  </nav>
+	<br>
+  <!-- Page Content -->
+  <div class="container">
+  		<div class="row" style="margin-bottom: 20px ;    ">
+     		<div class="col-sm-4">
+     			<a	th:href="@{/tasks/new}"><button class="btn btn-success">New Task</button></a>
+     		</div>
+     		 
+     		<div class="col-sm-4">
+     			<form th:action="@{/tasks}" id="formSearch" th:object="${searchForm}" method="POST">
+     				<input class="form-control" type="text" th:field="*{name}" placeholder="Nhập tên tìm kiếm..."> 
+     			</form>
+     		</div>
+     		 
+     		<div class="col-sm-2 text-center">
+     			<button form="formSearch" class="btn btn-info">Search</button>
+     		</div>
+     	</div> 
+   </div> 	
+   <div class="container-fluid">
+     <div class="table-responsive">   
+ 
+		<table class="table table-bordered text-center"	id="tableTask">
+		  <thead>
+		    <tr>
+		      <th scope="col">Id</th>
+		      <th scope="col">Name</th>		      
+		      <th scope="col">Planned Start Date</th>
+		      <th scope="col">Planned	End	Date</th>
+		      <th scope="col">Planned	Budget</th>
+		      <th scope="col">Actual Start Date</th>
+		      <th scope="col">Actual	End	Date</th>
+		      <th scope="col">Actual	Budget</th>
+		      <th scope="col">Project</th>
+		      <th scope="col">Stage</th>
+		      <th scope="col">+</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr th:each="aTask :	${pageTask.getContent()}">
+		      	<td th:text=${aTask.id}/>
+		      	<td th:text=${aTask.name}/>
+				<td th:text=${aTask.plannedStartDate}/>
+				<td th:text=${aTask.plannedEndDate}/> 
+				<td  th:inline="text" >  [[${#numbers.formatDecimal(aTask.plannedBudget, 0, 'COMMA', 2, 'POINT')}]] VNĐ  </td>
+				<td th:text=${aTask.actualStartDate}/>
+				<td th:text=${aTask.actualEndDate}/> 
+				<td  th:inline="text" >[[${#numbers.formatDecimal(aTask.actualBudget, 0, 'COMMA', 2, 'POINT')}]] VNĐ </td>
+				<td th:text=${aTask.project.name}/>
+				<td th:if="${aTask.stages == 'COMPLETED'}"><i class="fa fa-check" aria-hidden="true"></i></td>
+				<td th:if="${aTask.stages == 'INPROGRESS'}"><i class="fa fa-spinner" aria-hidden="true"></i></td>
+				<td th:if="${aTask.stages == 'NOTSTARTED'}"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></td> 
+				<td >
+					<a data-toggle="modal" data-target="#addTaskEmployee" 	class="btn btn-info	btnAddTask">  <i class="fa fa-users" aria-hidden="true"></i> </a>
+					<a th:href="@{'/tasks/edit/' + ${aTask.id}}"	class="btn btn-warning">  <i class="fa fa-edit" aria-hidden="true"></i> </a>
+					<a th:onclick="deleteTask([[${aTask.id}]])" class=" btn btn-danger">  <i class="fa fa-trash" aria-hidden="true"></i> </a>
+				</td>
+		    </tr> 
+		     
+		  </tbody>
+		  <tfoot>
+		  	<tr>
+			  	<td colspan="11">	  	
+			  		<nav aria-label="Page navigation example">
+					  <ul	 class="pagination justify-content-center">
+					    <li class="page-item  ">
+					      <a th:if="${pageTask.getNumber()+1 == 1}" class="page-link" href="javascript:void(0)" tabindex="-1">Previous</a>
+					       <a th:unless="${pageTask.getNumber()+1 == 1}" class="page-link"  th:onclick="gotoPage([[${pageTask.getNumber()+1  - 1}]])" tabindex="-1">Previous</a>
+					    </li>
+					     <th:block th:each="i : ${#numbers.sequence(1, pageTask.getTotalPages() )}"> 
+						    <!-- <button th:if="${response.page == i}" class="active">Dummy</button>
+						    <button th:unless="${response.page == i}">Dummy</button>
+						     -->						     
+					    	<li th:if="${pageTask.getNumber()+1 == i}"   class="active page-item"> 
+					    		<a th:text=${i}  href="javascript:void(0)"	class="page-link" > </a>
+					    	</li>
+					    	 <li th:unless="${pageTask.getNumber()+1 == i}"   class="page-item"> 
+					    		<a th:text=${i} class="page-link" th:onclick="gotoPage([[${i}]])"> </a>
+					    	</li>
+						</th:block>
+					    <li class="page-item">
+					      <a th:if="${pageTask.getNumber() + 1 == pageTask.getTotalPages()}" class="page-link" href="javascript:void(0)">Next </a>
+					      <a th:unless="${pageTask.getNumber() + 1 == pageTask.getTotalPages()}" class="page-link" th:onclick="gotoPage([[${pageTask.getNumber()+2}]])">Next</a>
+					      
+					    </li>
+					  </ul>
+					</nav>
+			  	</td>
+		  	</tr>
+		  </tfoot>
+		</table>
+		<script type="text/javascript">
+			function gotoPage(page){
+				$("#formSearch").attr('action',"/tasks?page="+page);
+				$("#formSearch").submit();
+			}
+			$(document).ready(function(){
+				$("#taskId").parents("li").addClass("active").siblings().removeClass("active");
+	    	});
+			function deleteTask(id){
+				if(confirm("Bạn có chắc chắn muốn xóa nó không ?")){
+					location.href="/tasks/delete/"+id;
+				}
+			}
+		</script>
+		  
+  </div>
+  
+  
+  		<div class="modal fade" id="addTaskEmployee" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog	modal-lg" role="document">
+		   <form    method="POST" th:action="@{/tasks/assigned/save}"	id="formSaveTaskEmp">
+		    <input type="hidden" name="taskId" id="tasId"  >
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLabel">Giao task cho nhân viên</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+			      <div class="modal-body">
+			        <div class="table-responsive" style="max-height:300px;">
+				       	 <table class="table table-bordered text-center" id="tbEmployee">
+						  <thead>
+						    <tr>
+						      <th scope="col">Chọn nhân viên</th>
+						      <th scope="col">Last Name</th>
+						      <th scope="col">Code</th>
+						    </tr>
+						 </thead>
+						 <tbody>
+						  	<tr th:each="aEmp : ${listEmp}">
+						  		<td><input type="checkbox" name="empId"	th:value="${aEmp.id}"></td>
+						  		<td	th:text="${aEmp.lastName}"/>
+						  		<td	th:text="${aEmp.code}"/>
+						  	</tr>
+						 </tbody>
+						</table>
+			       </div>  
+			      </div>
+		      <div class="modal-footer">
+		       <button type="submit" class="btn btn-primary"	form="formSaveTaskEmp" id="btn-saveTaskEmp" >Save</button>
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+		    </form>
+		  </div>
+		</div>	
+		<script type="text/javascript">
+			function	clear(){
+				$("#tbEmployee tbody td:first-child").each(function(){
+			 		    
+					 var checkboxValue = $(this).find("input[type=checkbox]");	
+			 		  checkboxValue.prop("checked",false);
+			 	   });
+			}
+			$(".btnAddTask").on('click',function(){
+				clear();
+				var xhr = new XMLHttpRequest();
+				xhr.withCredentials = true;
+				var taskId = $(this).parent().siblings(":first").text();
+				console.log(taskId)
+				$("#tasId").val(taskId);
+				xhr.addEventListener("readystatechange", function() {
+				  if(this.readyState === 4) {
+				    var myObject = JSON.parse(this.responseText);
+				    console.log(myObject);
+				    $.each(myObject,function(index,element){
+				 		  $("#tbEmployee tbody td:first-child").each(function(){
+					 		   var checkboxValue = $(this).find("input[type=checkbox]");	
+					 		   if(parseInt(checkboxValue.val()) === element.employee.id){
+					 			  checkboxValue.prop("checked",true);
+					 		   } 
+					 	   });
+			 		   });
+				  }
+				});
+				xhr.open("GET", "http://localhost:8082/api/assigned?taskId="+taskId);
+				xhr.send();
+			})
+			 
+		</script> 
+</div>
+  <!-- Bootstrap core JavaScript -->
+  <script th:src="@{/js/jquery.slim.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	 
+</body>
+
+</html>
